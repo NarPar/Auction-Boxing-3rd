@@ -9,6 +9,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
+using Auction_Boxing_3.Screens;
+
 namespace Auction_Boxing_3
 {
     /// <summary>
@@ -19,10 +21,21 @@ namespace Auction_Boxing_3
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        Screen state;
+
+        bool firstUpdate = true;
+
+        KeyboardState prevKState;
+        KeyboardState currKState;
+        
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            this.graphics.PreferredBackBufferWidth = 800;
+            this.graphics.PreferredBackBufferHeight = 600;
         }
 
         /// <summary>
@@ -33,7 +46,7 @@ namespace Auction_Boxing_3
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            
 
             base.Initialize();
         }
@@ -47,7 +60,8 @@ namespace Auction_Boxing_3
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            
+            
         }
 
         /// <summary>
@@ -66,11 +80,25 @@ namespace Auction_Boxing_3
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            prevKState = currKState;
+            currKState = Keyboard.GetState();
+
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
-            // TODO: Add your update logic here
+            if (firstUpdate)
+            {
+                ChangeState(new MainMenuScreen(new Rectangle(0, 0, Window.ClientBounds.Width, Window.ClientBounds.Height)), 0.0); // the game begins at the main menu screen
+                firstUpdate = false;
+            }
+
+            if (currKState.IsKeyDown(Keys.Space) && prevKState.IsKeyUp(Keys.Space))
+            {
+                state.SetTransitionOn(gameTime.TotalGameTime.TotalSeconds);
+            }
+
+            state.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -83,9 +111,25 @@ namespace Auction_Boxing_3
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
+
+            state.Draw(spriteBatch);
+
+            spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        /// <summary>
+        /// Loads the content for the passed screen, then changes the current screen of the game. ( ie. the "state".)
+        /// </summary>
+        /// <param name="newState">The constructed state</param>
+        /// <param name="currtime">The current elapsed time</param>
+        public void ChangeState(Screen newState, double currtime)
+        {
+            newState.LoadContent(Content); // Load the new screens content
+            newState.SetTransitionOn(currtime);
+            state = newState; // set the state
         }
     }
 }

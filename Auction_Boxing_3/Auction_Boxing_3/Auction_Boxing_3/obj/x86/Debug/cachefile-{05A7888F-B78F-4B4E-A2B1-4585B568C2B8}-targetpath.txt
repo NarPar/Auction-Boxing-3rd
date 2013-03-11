@@ -1,0 +1,9 @@
+Content\Menu\Barton_Picture.xnb
+Content\Menu\Boxing_Picture_1.xnb
+Content\Menu\Boxing_Picture_2.xnb
+Content\Menu\Boxing_Picture_3.xnb
+Content\Menu\ButlerHand_Idle.xnb
+Content\Menu\Menu_bg.xnb
+Content\Menu\Platter_Idle.xnb
+Content\Menu\Platter_Punch.xnb
+Content\Menu\Punch_Glove.xnb
